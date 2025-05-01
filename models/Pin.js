@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
 
 const pinSchema = new mongoose.Schema({
-  imageUrl: {
+  title: {
     type: String,
     required: true,
   },
-  note: String,
-  link: String,
+  imageUrl: {
+    type: String,
+    required: false,
+  },
   board: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Board",

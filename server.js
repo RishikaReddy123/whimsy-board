@@ -16,10 +16,6 @@ app.use(cors());
 
 const PORT = process.env.PORT || 5000;
 
-// app.use("/", (req, res) => {
-//   res.send("Welcome!!");
-// });
-
 app.use("/api/auth", authRoutes);
 
 app.use("/api/boards", boardRoutes);
@@ -27,6 +23,10 @@ app.use("/api/boards", boardRoutes);
 app.use("/api/pins", pinRoutes);
 
 app.use("/api/upload", uploadRoute);
+
+app.use("/", (req, res) => {
+  res.send("Welcome!!");
+});
 
 mongoose
   .connect(process.env.MONGO_URI)

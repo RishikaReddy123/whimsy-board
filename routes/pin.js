@@ -4,18 +4,21 @@ import authenticate from "../middlewares/authenticate.js";
 const router = express.Router();
 
 router.post("/", authenticate, async (req, res) => {
-  const { imageUrl, note, link, board } = req.body;
+  const { title, imageUrl, board } = req.body;
   try {
+    console.log("📌 Incoming request to /api/pins");
+    console.log("Body:", req.body);
+    console.log("User:", req.user);
     const newPin = new Pin({
+      title,
       imageUrl,
-      note,
-      link,
       board,
       createdBy: req.user.id,
     });
     await newPin.save();
     res.status(201).json({ message: "Pin created! :)", pin: newPin });
   } catch (error) {
+    console.error("❌ Error in POST /api/pins:", error.message);
     res.status(500).json({ message: error.message });
   }
 });
@@ -36,14 +39,14 @@ router.get("/board/:boardId", authenticate, async (req, res) => {
 });
 
 router.patch("/:pinId", authenticate, async (req, res) => {
-  const { imageUrl, note, link } = req.body;
+  const { title, imageUrl } = req.body;
   try {
     const pin = await Pin.findOneAndUpdate(
       {
         _id: req.params.pinId,
         createdBy: req.user.id,
       },
-      { imageUrl, note, link },
+      { title },
       { new: true }
     );
     if (!pin) {
@@ -65,6 +68,25 @@ router.delete("/:pinId", authenticate, async (req, res) => {
       return res.status(404).json({ message: "No pin found!" });
     }
     res.status(200).json({ message: "Pin deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.post("/:pinId/save", authenticate, async (req, res) => {
+  const { board } = req.body;
+  try {
+    const originalPin = await Pin.findById(req.params.pinId);
+    if (!originalPin) {
+      res.status(404).json({ message: "Pin not found!" });
+    }
+    const newPin = new Pin({
+      imageUrl: originalPin.imageUrl,
+      board,
+      createdBy: req.user.id,
+    });
+    await newPin.save();
+    res.status(201).json({ message: "Pin saved successfully!" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

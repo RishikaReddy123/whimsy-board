@@ -1,6 +1,7 @@
 import express from "express";
 import Board from "../models/Board.js";
 import authenticate from "../middlewares/authenticate.js";
+import Pin from "../models/Pin.js";
 const router = express.Router();
 
 router.post("/", authenticate, async (req, res) => {
@@ -39,7 +40,8 @@ router.get("/:id", authenticate, async (req, res) => {
     if (!board) {
       return res.status(404).json({ message: "Board not found!" });
     }
-    res.status(200).json(board);
+    const pins = await Pin.find({ boardId: req.params.id });
+    res.status(200).json({ board, pins });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
