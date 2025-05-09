@@ -5,6 +5,18 @@ const pinSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    required: true,
+  },
+  caption: {
+    type: String,
+    default: "",
+  },
+  tags: {
+    type: [String],
+    default: [],
+  },
   imageUrl: {
     type: String,
     required: false,

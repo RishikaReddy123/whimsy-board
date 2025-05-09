@@ -4,7 +4,7 @@ import authenticate from "../middlewares/authenticate.js";
 const router = express.Router();
 
 router.post("/", authenticate, async (req, res) => {
-  const { title, imageUrl, board } = req.body;
+  const { title, imageUrl, board, caption, tags, description } = req.body;
   try {
     console.log("📌 Incoming request to /api/pins");
     console.log("Body:", req.body);
@@ -12,6 +12,9 @@ router.post("/", authenticate, async (req, res) => {
     const newPin = new Pin({
       title,
       imageUrl,
+      description,
+      caption,
+      tags,
       board,
       createdBy: req.user.id,
     });
@@ -39,7 +42,7 @@ router.get("/board/:boardId", authenticate, async (req, res) => {
 });
 
 router.patch("/:pinId", authenticate, async (req, res) => {
-  const { title, imageUrl } = req.body;
+  const { title, description } = req.body;
   try {
     const pin = await Pin.findOneAndUpdate(
       {
@@ -47,6 +50,7 @@ router.patch("/:pinId", authenticate, async (req, res) => {
         createdBy: req.user.id,
       },
       { title },
+      { description },
       { new: true }
     );
     if (!pin) {
@@ -78,16 +82,22 @@ router.post("/:pinId/save", authenticate, async (req, res) => {
   try {
     const originalPin = await Pin.findById(req.params.pinId);
     if (!originalPin) {
-      res.status(404).json({ message: "Pin not found!" });
+      return res.status(404).json({ message: "Pin not found!" });
     }
+    const title = originalPin.title || "Untitled Pin";
     const newPin = new Pin({
+      title,
       imageUrl: originalPin.imageUrl,
+      description,
+      caption,
+      tags,
       board,
       createdBy: req.user.id,
     });
     await newPin.save();
     res.status(201).json({ message: "Pin saved successfully!" });
   } catch (error) {
+    console.error("Error saving pin:", error);
     res.status(500).json({ message: error.message });
   }
 });

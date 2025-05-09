@@ -7,6 +7,7 @@ import boardRoutes from "./routes/board.js";
 import authRoutes from "./routes/auth.js";
 import pinRoutes from "./routes/pin.js";
 import uploadRoute from "./routes/upload.js";
+import aiRoutes from "./routes/ai.js";
 
 dotenv.config();
 const app = express();
@@ -23,6 +24,8 @@ app.use("/api/boards", boardRoutes);
 app.use("/api/pins", pinRoutes);
 
 app.use("/api/upload", uploadRoute);
+
+app.use("/api/ai", aiRoutes);
 
 app.use("/", (req, res) => {
   res.send("Welcome!!");

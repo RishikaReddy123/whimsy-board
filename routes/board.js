@@ -25,7 +25,7 @@ router.get("/", authenticate, async (req, res) => {
     const boards = await Board.find({ createdBy: req.user.id }).sort({
       createdAt: -1,
     });
-    res.status(200).json(boards);
+    res.status(200).json({ boards });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
